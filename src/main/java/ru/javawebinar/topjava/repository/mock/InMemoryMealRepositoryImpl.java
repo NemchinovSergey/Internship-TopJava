@@ -7,6 +7,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -47,13 +49,13 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public boolean delete(int userId, int mealId) {
         log.debug("delete: userId {}, mealId {}", userId, mealId);
         Meal meal = repository.get(mealId);
-        if (Objects.equals(meal.getUserId(), userId)) {
+        if (meal != null && Objects.equals(meal.getUserId(), userId)) {
             log.debug("Delete meal: user id {}, meal id {}", userId, meal.getId());
             repository.remove(mealId);
             return true;
         }
         else {
-            log.debug("Access denied! user id {}, meal id {}", userId, meal.getId());
+            log.debug("Not found! user id {}, meal id {}", userId, mealId);
             return false;
         }
     }
@@ -62,15 +64,27 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public Meal get(int userId, int mealId) {
         log.debug("get: userId {}, mealId {}", userId, mealId);
         Meal meal = repository.get(mealId);
-        return Objects.equals(meal.getUserId(), userId) ? meal : null;
+        return (meal != null && Objects.equals(meal.getUserId(), userId)) ? meal : null;
     }
 
     @Override
     public List<Meal> getAll(int userId) {
         log.debug("getAll: {}", userId);
         return repository.values().stream()
-                .filter(u -> Objects.equals(u.getUserId(), userId))
+                .filter(meal -> Objects.equals(meal.getUserId(), userId))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        log.debug("getFiltered: userId {}, startDate {}, endDate {}, startTime {}, endTime {}", userId, startDate, endDate, startTime, endTime);
+        return getAll(userId).stream()
+                .filter(meal -> Objects.equals(meal.getUserId(), userId))
+                .filter(meal -> startDate == null || meal.getDate().isEqual(startDate) || meal.getDate().isAfter(startDate))
+                .filter(meal -> endDate == null || meal.getDate().isEqual(endDate) || meal.getDate().isBefore(endDate))
+                .filter(meal -> startTime == null || meal.getTime().equals(startTime) || meal.getTime().isAfter(startTime))
+                .filter(meal -> endTime == null || meal.getTime().equals(endTime) || meal.getTime().isBefore(endTime))
                 .collect(Collectors.toList());
     }
 }
