@@ -80,7 +80,6 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         log.debug("getFiltered: userId {}, startDate {}, endDate {}, startTime {}, endTime {}", userId, startDate, endDate, startTime, endTime);
         return getAll(userId).stream()
-                .filter(meal -> Objects.equals(meal.getUserId(), userId))
                 .filter(meal -> startDate == null || meal.getDate().isEqual(startDate) || meal.getDate().isAfter(startDate))
                 .filter(meal -> endDate == null || meal.getDate().isEqual(endDate) || meal.getDate().isBefore(endDate))
                 .filter(meal -> startTime == null || meal.getTime().equals(startTime) || meal.getTime().isAfter(startTime))
