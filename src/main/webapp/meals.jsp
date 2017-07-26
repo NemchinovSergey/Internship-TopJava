@@ -31,8 +31,9 @@
             <th></th>
         </tr>
         </thead>
+        <jsp:useBean id="meals" type="java.util.List<ru.javawebinar.topjava.to.MealWithExceed>"/>
         <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealWithExceed"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealWithExceed"/>
             <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
