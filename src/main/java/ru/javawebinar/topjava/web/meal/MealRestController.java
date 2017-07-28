@@ -27,12 +27,14 @@ public class MealRestController {
     public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
+        meal.setUserId(AuthorizedUser.id());
         return service.save(AuthorizedUser.id(), meal);
     }
 
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         checkIdConsistent(meal, id);
+        meal.setUserId(AuthorizedUser.id());
         service.update(AuthorizedUser.id(), meal);
     }
 
