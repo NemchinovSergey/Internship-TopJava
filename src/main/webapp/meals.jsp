@@ -21,12 +21,12 @@
     <h2>Meal list</h2>
     <p>
         Фильтрация по дате/времени:
-    <form id="filter" action="meals" method="post">
-        <label for="startDate">От даты:</label><input id="startDate" type="date">
-        <label for="endDate">До даты:</label><input id="endDate" type="date">
+    <form id="filter" method="post" action="meals?action=filter">
+        <label for="startDate">От даты:</label><input id="startDate" name="startDate" type="date" value="${param.startDate}">
+        <label for="endDate">До даты:</label><input id="endDate" name="endDate" type="date" value="${param.endDate}">
         <br>
-        <label for="startTime">От времени:</label><input id="startTime" type="time">
-        <label for="endTime">До времени:</label><input id="endTime" type="time">
+        <label for="startTime">От времени:</label><input id="startTime" name="startTime" type="time" value="${param.startTime}">
+        <label for="endTime">До времени:</label><input id="endTime" name="endTime" type="time" value="${param.endTime}">
         <br>
         <button type="submit">Применить</button>
         <button type="reset">Сбросить</button>

@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -77,13 +77,10 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        log.debug("getFiltered: userId {}, startDate {}, endDate {}, startTime {}, endTime {}", userId, startDate, endDate, startTime, endTime);
+    public List<Meal> getFiltered(int userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        log.debug("getFiltered: userId {}, ({} - {})", userId, startDateTime, endDateTime);
         return getAll(userId).stream()
-                .filter(meal -> startDate == null || meal.getDate().isEqual(startDate) || meal.getDate().isAfter(startDate))
-                .filter(meal -> endDate == null || meal.getDate().isEqual(endDate) || meal.getDate().isBefore(endDate))
-                .filter(meal -> startTime == null || meal.getTime().equals(startTime) || meal.getTime().isAfter(startTime))
-                .filter(meal -> endTime == null || meal.getTime().equals(endTime) || meal.getTime().isBefore(endTime))
+                .filter(meal -> DateTimeUtil.isBetween(meal.getDateTime(), startDateTime, endDateTime))
                 .collect(Collectors.toList());
     }
 }
