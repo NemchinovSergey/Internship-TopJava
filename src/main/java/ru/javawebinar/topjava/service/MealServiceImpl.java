@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkUserId;
 
 @Service
 public class MealServiceImpl implements MealService {
@@ -19,11 +20,14 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public Meal save(int userId, Meal meal) {
+        checkUserId(meal, userId);
         return repository.save(userId, meal);
     }
 
     @Override
     public void update(int userId, Meal meal) {
+        checkNotFoundWithId(repository.get(userId, meal.getId()), meal.getId());
+        checkUserId(meal, userId);
         repository.save(userId, meal);
     }
 
