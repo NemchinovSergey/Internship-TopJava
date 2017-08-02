@@ -10,15 +10,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.DbPopulator;
+import ru.javawebinar.topjava.repository.mock.InMemoryUserRepositoryImpl;
+import ru.javawebinar.topjava.service.UserServiceImpl;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Collection;
 
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
+import static ru.javawebinar.topjava.UserTestData.USER;
 
-@ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/spring-db.xml"})
+//@ContextConfiguration({"classpath:spring-app-test.xml"})
+@ContextConfiguration(classes = {
+        AdminRestController.class,
+        UserServiceImpl.class,
+        InMemoryUserRepositoryImpl.class
+})
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
@@ -28,12 +35,12 @@ public class InMemoryAdminRestControllerSpringTest {
     @Autowired
     private UserRepository repository;
 
-    @Autowired
-    private DbPopulator dbPopulator;
-
     @Before
     public void setUp() throws Exception {
-        dbPopulator.execute();
+        // re-initialize
+        repository.getAll().forEach(u -> repository.delete(u.getId()));
+        repository.save(USER);
+        repository.save(ADMIN);
     }
 
     @Test
