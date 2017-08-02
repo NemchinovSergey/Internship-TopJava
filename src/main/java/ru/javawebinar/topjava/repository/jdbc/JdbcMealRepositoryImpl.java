@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -49,9 +50,12 @@ public class JdbcMealRepositoryImpl implements MealRepository {
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
         } else {
-            namedParameterJdbcTemplate.update(
+            int updated = namedParameterJdbcTemplate.update(
                     "UPDATE meals SET user_id=:user_id, datetime=:datetime, calories=:calories, " +
-                            "description=:description WHERE id=:id", map);
+                            "description=:description WHERE id=:id and user_id=:user_id", map);
+            if (updated == 0) {
+                throw new NotFoundException(meal + " not found");
+            }
         }
         return meal;
     }
