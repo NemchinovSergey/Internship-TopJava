@@ -8,6 +8,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +18,7 @@ public class MealMemoryDaoImpl implements MealDao {
     private final Logger LOG = getLogger(MealMemoryDaoImpl.class);
 
     private final AtomicInteger counter = new AtomicInteger(0);
-    public final ConcurrentHashMap<Integer, Meal> MEALS = new ConcurrentHashMap<>();
+    public final Map<Integer, Meal> MEALS = new ConcurrentHashMap<>();
 
     {
         LOG.debug("initialization");
@@ -41,12 +42,12 @@ public class MealMemoryDaoImpl implements MealDao {
     }
     
     @Override
-    public void save(Meal meal) {
+    public Meal save(Meal meal) {
         LOG.debug("save: {}", meal);
         if (meal.getId() == null) {
             meal.setId(counter.getAndIncrement());
         }
-        MEALS.put(meal.getId(), meal);
+        return MEALS.put(meal.getId(), meal);
     }
 
     @Override
